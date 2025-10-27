@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "vector.h"
+#include "Vector.h"
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -194,4 +194,5 @@ void printVector(const vector<Complex>& vec, const string& msg = "") {
     }
     cout << endl << "向量大小: " << vec.size() << endl << endl;
 }
+
 
