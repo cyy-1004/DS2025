@@ -1,40 +1,47 @@
 #pragma once
-
 #include <iostream>
-#include <algorithm>  // ÓÃÓÚ std::max
-#include <stdexcept>  // ÓÃÓÚÒì³£´¦Àí
+#include <algorithm>
+#include <stdexcept>
 
 template <typename T>
 class Vector {
 private:
-    T* _elem;   // Êı¾İ´æ´¢Ö¸Õë
-    int _size;  // µ±Ç°ÔªËØÊıÁ¿
-    int _cap;   // ÈİÁ¿
+    T* _elem;   // æ•°æ®å­˜å‚¨æŒ‡é’ˆ
+    int _size;  // å½“å‰å…ƒç´ æ•°é‡
+    int _cap;   // å®¹é‡
 
-    // À©Èİº¯Êı
+    // æ‰©å®¹å‡½æ•°ï¼šç¡®ä¿å®¹é‡è¶³å¤Ÿ
     void expand() {
         if (_size < _cap) return;
-        // È·±£³õÊ¼ÈİÁ¿ÖÁÉÙÎª1£¬ÈİÁ¿·­±¶
-        int new_cap = std::max(1, _cap) * 2;
+        int new_cap = (_cap == 0) ? 1 : _cap * 2;  // åˆå§‹å®¹é‡ä¸º1ï¼Œä¹‹åç¿»å€
         T* new_elem = new T[new_cap];
-        // ¸´ÖÆ¾ÉÔªËØ
+        
+        // å¤åˆ¶å…ƒç´ ï¼ˆä½¿ç”¨ç§»åŠ¨è¯­ä¹‰æé«˜æ•ˆç‡ï¼‰
         for (int i = 0; i < _size; ++i) {
-            new_elem[i] = _elem[i];
+            new_elem[i] = std::move(_elem[i]);
         }
-        // ÊÍ·Å¾ÉÄÚ´æ
+        
         delete[] _elem;
         _elem = new_elem;
         _cap = new_cap;
     }
 
 public:
-    // ¹¹Ôìº¯Êı
+    // æ„é€ å‡½æ•°
     Vector(int capacity = 10) : _size(0), _cap(capacity) {
-        if (_cap < 1) _cap = 1;  // ÈİÁ¿ÖÁÉÙÎª1
+        if (_cap < 1) _cap = 1;
         _elem = new T[_cap];
     }
+    // æ”¯æŒåˆå§‹åŒ–åˆ—è¡¨æ„é€ ï¼ˆä¾‹å¦‚ Vector<int> v = {1,2,3};ï¼‰
+    Vector(std::initializer_list<T> init) : _size(init.size()), _cap(init.size()) {
+    _elem = new T[_cap];
+    int i = 0;
+    for (const auto& val : init) {
+        _elem[i++] = val;
+    }
+}
 
-    // ¸´ÖÆ¹¹Ôìº¯Êı
+    // å¤åˆ¶æ„é€ å‡½æ•°
     Vector(const Vector<T>& other) : _size(other._size), _cap(other._cap) {
         _elem = new T[_cap];
         for (int i = 0; i < _size; ++i) {
@@ -42,17 +49,53 @@ public:
         }
     }
 
-    // Îö¹¹º¯Êı
+    // ç§»åŠ¨æ„é€ å‡½æ•°ï¼ˆæ–°å¢ï¼Œé¿å…ä¸å¿…è¦çš„å¤åˆ¶ï¼‰
+    Vector(Vector<T>&& other) noexcept 
+        : _elem(other._elem), _size(other._size), _cap(other._cap) {
+        other._elem = nullptr;
+        other._size = 0;
+        other._cap = 0;
+    }
+
+    // èµ‹å€¼è¿ç®—ç¬¦
+    Vector<T>& operator=(const Vector<T>& other) {
+        if (this != &other) {
+            delete[] _elem;
+            _size = other._size;
+            _cap = other._cap;
+            _elem = new T[_cap];
+            for (int i = 0; i < _size; ++i) {
+                _elem[i] = other._elem[i];
+            }
+        }
+        return *this;
+    }
+
+    // ç§»åŠ¨èµ‹å€¼è¿ç®—ç¬¦ï¼ˆæ–°å¢ï¼‰
+    Vector<T>& operator=(Vector<T>&& other) noexcept {
+        if (this != &other) {
+            delete[] _elem;
+            _elem = other._elem;
+            _size = other._size;
+            _cap = other._cap;
+            other._elem = nullptr;
+            other._size = 0;
+            other._cap = 0;
+        }
+        return *this;
+    }
+
+    // ææ„å‡½æ•°
     ~Vector() {
         delete[] _elem;
     }
 
-    // »ù±¾ÊôĞÔ
+    // åŸºæœ¬å±æ€§
     int size() const { return _size; }
     int capacity() const { return _cap; }
     bool empty() const { return _size == 0; }
 
-    // ÔªËØ·ÃÎÊ
+    // å…ƒç´ è®¿é—®
     T& operator[](int idx) {
         if (idx < 0 || idx >= _size) {
             throw std::out_of_range("Vector index out of range");
@@ -67,13 +110,19 @@ public:
         return _elem[idx];
     }
 
-    // Î²²¿²åÈë
+    // å°¾éƒ¨æ’å…¥
     void push_back(const T& val) {
         expand();
         _elem[_size++] = val;
     }
 
-    // Î²²¿É¾³ı
+    // å°¾éƒ¨æ’å…¥ï¼ˆç§»åŠ¨ç‰ˆæœ¬ï¼‰
+    void push_back(T&& val) {
+        expand();
+        _elem[_size++] = std::move(val);
+    }
+
+    // å°¾éƒ¨åˆ é™¤
     void pop_back() {
         if (empty()) {
             throw std::runtime_error("Cannot pop from empty Vector");
@@ -81,35 +130,33 @@ public:
         --_size;
     }
 
-    // ²åÈëÔªËØ
+    // æ’å…¥å…ƒç´ 
     void insert(int pos, const T& val) {
         if (pos < 0 || pos > _size) {
             throw std::out_of_range("Insert position out of range");
         }
         expand();
-        // ÔªËØºóÒÆ
         for (int i = _size; i > pos; --i) {
-            _elem[i] = _elem[i - 1];
+            _elem[i] = std::move(_elem[i - 1]);  // ç§»åŠ¨å…ƒç´ æé«˜æ•ˆç‡
         }
         _elem[pos] = val;
         ++_size;
     }
 
-    // É¾³ıÔªËØ
+    // åˆ é™¤å…ƒç´ 
     T remove(int pos) {
         if (pos < 0 || pos >= _size) {
             throw std::out_of_range("Remove position out of range");
         }
-        T res = _elem[pos];
-        // ÔªËØÇ°ÒÆ
+        T res = std::move(_elem[pos]);  // ç§»åŠ¨è¯­ä¹‰
         for (int i = pos; i < _size - 1; ++i) {
-            _elem[i] = _elem[i + 1];
+            _elem[i] = std::move(_elem[i + 1]);
         }
         --_size;
         return res;
     }
 
-    // ²éÕÒÔªËØ
+    // æŸ¥æ‰¾å…ƒç´ 
     int find(const T& val) const {
         for (int i = 0; i < _size; ++i) {
             if (_elem[i] == val) {
@@ -119,8 +166,8 @@ public:
         return -1;
     }
 
-    // Ñ¡ÔñÅÅĞò
-    void sort() {
+    // é€‰æ‹©æ’åº
+    void selection_sort() {
         for (int i = 0; i < _size - 1; ++i) {
             int min_idx = i;
             for (int j = i + 1; j < _size; ++j) {
@@ -132,12 +179,81 @@ public:
         }
     }
 
-    // ´òÓ¡ÔªËØ
+    // å½’å¹¶æ’åºï¼ˆæ–°å¢ï¼‰
+    void merge_sort() {
+        if (_size <= 1) return;
+        merge_sort_recursive(0, _size - 1);
+    }
+
+    // æ‰“å°å…ƒç´ 
     void print() const {
         std::cout << "Vector(" << _size << "/" << _cap << "): ";
         for (int i = 0; i < _size; ++i) {
             std::cout << _elem[i] << " ";
         }
         std::cout << std::endl;
+    }
+
+    // æ¸…ç©ºå‘é‡
+    void clear() {
+        _size = 0;  // é€»è¾‘æ¸…ç©ºï¼Œä¸é‡Šæ”¾å†…å­˜
+    }
+
+    // é¢„ç•™å®¹é‡
+    void reserve(int new_cap) {
+        if (new_cap > _cap) {
+            T* new_elem = new T[new_cap];
+            for (int i = 0; i < _size; ++i) {
+                new_elem[i] = std::move(_elem[i]);
+            }
+            delete[] _elem;
+            _elem = new_elem;
+            _cap = new_cap;
+        }
+    }
+
+private:
+    // å½’å¹¶æ’åºé€’å½’è¾…åŠ©å‡½æ•°
+    void merge_sort_recursive(int left, int right) {
+        if (left >= right) return;
+        int mid = left + (right - left) / 2;  // é¿å…æº¢å‡º
+        merge_sort_recursive(left, mid);
+        merge_sort_recursive(mid + 1, right);
+        merge(left, mid, right);
+    }
+
+    // å½’å¹¶æ“ä½œ
+    void merge(int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        // ä¸´æ—¶å­˜å‚¨
+        T* L = new T[n1];
+        T* R = new T[n2];
+
+        // å¤åˆ¶æ•°æ®
+        for (int i = 0; i < n1; ++i)
+            L[i] = std::move(_elem[left + i]);
+        for (int j = 0; j < n2; ++j)
+            R[j] = std::move(_elem[mid + 1 + j]);
+
+        // åˆå¹¶
+        int i = 0, j = 0, k = left;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                _elem[k++] = std::move(L[i++]);
+            } else {
+                _elem[k++] = std::move(R[j++]);
+            }
+        }
+
+        // å¤„ç†å‰©ä½™å…ƒç´ 
+        while (i < n1)
+            _elem[k++] = std::move(L[i++]);
+        while (j < n2)
+            _elem[k++] = std::move(R[j++]);
+
+        delete[] L;
+        delete[] R;
     }
 };
