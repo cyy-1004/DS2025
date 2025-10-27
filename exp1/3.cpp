@@ -1,6 +1,6 @@
 #include <iostream>
-#include <vector>
-#include <stack>
+#include "Vector.h"
+#include "Stack.h"
 #include <ctime>  // 添加这行，包含time()函数的声明
 using namespace std;
 
@@ -50,3 +50,4 @@ int main() {
 
     return 0;
 }
+
