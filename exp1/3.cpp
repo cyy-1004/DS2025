@@ -1,53 +1,71 @@
 #include <iostream>
+#include <random>
 #include "Vector.h"
 #include "Stack.h"
-#include <ctime>  // 添加这行，包含time()函数的声明
+
 using namespace std;
 
-
-// 计算柱状图中最大矩形面积的函数
-int largestRectangleArea(vector<int>& heights) {
-    stack<int> stk; // 单调栈，存储柱子的索引
+// 计算柱状图中最大矩形面积
+int largestRectangleArea(Vector<int>& heights) {
+    Stack<int> stk;
+    heights.push_back(0); // 哨兵，确保最后所有元素出栈
     int maxArea = 0;
-    int n = heights.size();
-
-    for (int i = 0; i <= n; ++i) {
-        // 当栈不为空且当前柱子高度小于栈顶柱子高度时，计算以栈顶柱子高度为高的矩形面积
-        while (!stk.empty() && (i == n || heights[i] < heights[stk.top()])) {
-            int height = heights[stk.top()];
-            stk.pop();
-            int width;
-            if (stk.empty()) {
-                width = i;
-            } else {
-                width = i - stk.top() - 1;
-            }
-            maxArea = max(maxArea, height * width);
+    for (int i = 0; i < heights.size(); ++i) {
+        while (!stk.empty() && heights[stk.top()] > heights[i]) {
+            int h = heights[stk.pop()];
+            int w = stk.empty() ? i : i - stk.top() - 1;
+            maxArea = max(maxArea, h * w);
         }
         stk.push(i);
     }
-
+    heights.pop_back(); // 还原原数组
     return maxArea;
 }
 
 // 随机生成测试数据并测试
-int main() {
-    srand(time(0)); // 初始化随机数种子
-
-    for (int t = 0; t < 10; ++t) {
-        int n = rand() % 105 + 1; // 生成 1 到 105 之间的柱子数量
-        vector<int> heights(n);
-        cout << "测试组 " << t + 1 << "：" << endl;
-        cout << "柱子高度：";
-        for (int i = 0; i < n; ++i) {
-            heights[i] = rand() % 105; // 生成 0 到 104 之间的高度
-            cout << heights[i] << " ";
+void testRandomCases() {
+    default_random_engine e;
+    uniform_int_distribution<int> sizeDist(1, 105);
+    uniform_int_distribution<int> valDist(0, 104);
+    
+    for (int i = 0; i < 10; ++i) {
+        int n = sizeDist(e);
+        Vector<int> heights;
+        for (int j = 0; j < n; ++j) {
+            heights.push_back(valDist(e));
         }
+        
+        cout << "测试用例 " << i + 1 << " (长度: " << n << "): ";
+        for (int j = 0; j < min(n, 10); ++j) { // 只输出前10个元素（避免过长）
+            cout << heights[j] << " ";
+        }
+        if (n > 10) cout << "...";
         cout << endl;
-        int maxArea = largestRectangleArea(heights);
-        cout << "最大矩形面积：" << maxArea << endl << endl;
+        
+        int area = largestRectangleArea(heights);
+        cout << "最大矩形面积: " << area << endl << endl;
     }
-
-    return 0;
 }
 
+int main() {
+    // 示例1测试
+    Vector<int> heights1 = {2, 1, 5, 6, 2, 3};
+    cout << "示例1输入: ";
+    for (int i = 0; i < heights1.size(); ++i) {
+        cout << heights1[i] << " ";
+    }
+    cout << "\n示例1输出: " << largestRectangleArea(heights1) << endl << endl;
+    
+    // 示例2测试
+    Vector<int> heights2 = {2, 4};
+    cout << "示例2输入: ";
+    for (int i = 0; i < heights2.size(); ++i) {
+        cout << heights2[i] << " ";
+    }
+    cout << "\n示例2输出: " << largestRectangleArea(heights2) << endl << endl;
+    
+    // 随机测试
+    testRandomCases();
+    
+    return 0;
+}
