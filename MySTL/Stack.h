@@ -58,3 +58,5 @@ public:
 };
 
 #endif // STACK_H
+#endif // STACK_H
+
