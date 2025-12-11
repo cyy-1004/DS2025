@@ -1,6 +1,6 @@
-#include "Vector.h"
-#include "list.h"
-#include "Stack.h"
+#include "MySTL/Vector.h"
+#include "MySTL/list.h"
+#include "MySTL/Stack.h"
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -9,14 +9,14 @@
 #include <cctype>
 using namespace std;
 
-// Î»Í¼Àà£¨ĞŞ¸´ const ÏŞ¶¨·û³åÍ»£¬ÒÆ³ıÖØ¸´¶¨ÒåÒÀÀµ£©
+// ä½å›¾ç±»ï¼ˆä¿®å¤ const é™å®šç¬¦å†²çªï¼Œç§»é™¤é‡å¤å®šä¹‰ä¾èµ–ï¼‰
 class Bitmap {
 private:
-    unsigned char* M;  // ´æ´¢Î»Í¼µÄ×Ö½ÚÊı×é
-    Rank N;            // ×Ö½ÚÊı×é³¤¶È£¨×Ü±ÈÌØÊı = N * 8£©
-    Rank _sz;          // ÒÑÊ¹ÓÃµÄ±ÈÌØÊı
+    unsigned char* M;  // å­˜å‚¨ä½å›¾çš„å­—èŠ‚æ•°ç»„
+    Rank N;            // å­—èŠ‚æ•°ç»„é•¿åº¦ï¼ˆæ€»æ¯”ç‰¹æ•° = N * 8ï¼‰
+    Rank _sz;          // å·²ä½¿ç”¨çš„æ¯”ç‰¹æ•°
 
-    // À©Èİ£º½öÔÚ·Ç const ²Ù×÷ÖĞµ÷ÓÃ£¨±ÜÃâ const º¯Êı³åÍ»£©
+    // æ‰©å®¹ï¼šä»…åœ¨é const æ“ä½œä¸­è°ƒç”¨ï¼ˆé¿å… const å‡½æ•°å†²çªï¼‰
     void expand(Rank k) {
         if (k < 8 * N) return;
         Rank oldN = N;
@@ -28,7 +28,7 @@ private:
         delete[] oldM;
     }
 
-    // ³õÊ¼»¯£ºÖ¸¶¨³õÊ¼±ÈÌØÊı£¨Ä¬ÈÏ 8 Î»£©
+    // åˆå§‹åŒ–ï¼šæŒ‡å®šåˆå§‹æ¯”ç‰¹æ•°ï¼ˆé»˜è®¤ 8 ä½ï¼‰
     void init(Rank n = 8) {
         N = (n + 7) / 8;
         M = new unsigned char[N];
@@ -37,10 +37,10 @@ private:
     }
 
 public:
-    // ¹¹Ôìº¯Êı
+    // æ„é€ å‡½æ•°
     Bitmap(Rank n = 8) { init(n); }
 
-    // Îö¹¹º¯Êı
+    // ææ„å‡½æ•°
     ~Bitmap() {
         delete[] M;
         M = nullptr;
@@ -48,17 +48,17 @@ public:
         _sz = 0;
     }
 
-    // ·µ»ØÒÑÊ¹ÓÃµÄ±ÈÌØÊı
+    // è¿”å›å·²ä½¿ç”¨çš„æ¯”ç‰¹æ•°
     Rank size() const { return _sz; }
 
-    // ÉèÖÃµÚ k Î»Îª 1£¨·Ç const ²Ù×÷£¬¿ÉÀ©Èİ£©
+    // è®¾ç½®ç¬¬ k ä½ä¸º 1ï¼ˆé const æ“ä½œï¼Œå¯æ‰©å®¹ï¼‰
     void set(Rank k) {
         expand(k);
         M[k >> 3] |= (0x80 >> (k & 0x07));
         _sz = max(_sz, k + 1);
     }
 
-    // Çå¿ÕµÚ k Î»Îª 0£¨·Ç const ²Ù×÷£¬¿ÉÀ©Èİ£©
+    // æ¸…ç©ºç¬¬ k ä½ä¸º 0ï¼ˆé const æ“ä½œï¼Œå¯æ‰©å®¹ï¼‰
     void clear(Rank k) {
         expand(k);
         M[k >> 3] &= ~(0x80 >> (k & 0x07));
@@ -67,15 +67,15 @@ public:
         }
     }
 
-    // ²âÊÔµÚ k Î»ÊÇ·ñÎª 1£¨const º¯Êı£¬²»À©Èİ£¬³¬³ö·¶Î§·µ»Ø false£©
+    // æµ‹è¯•ç¬¬ k ä½æ˜¯å¦ä¸º 1ï¼ˆconst å‡½æ•°ï¼Œä¸æ‰©å®¹ï¼Œè¶…å‡ºèŒƒå›´è¿”å› falseï¼‰
     bool test(Rank k) const {
         if (k >= 8 * N) return false;
         return (M[k >> 3] & (0x80 >> (k & 0x07))) != 0;
     }
 
-    // ½«Ç° n Î»×ª»»Îª×Ö·û´®£¨·Ç const ²Ù×÷£¬È·±£ÈİÁ¿£©
+    // å°†å‰ n ä½è½¬æ¢ä¸ºå­—ç¬¦ä¸²ï¼ˆé const æ“ä½œï¼Œç¡®ä¿å®¹é‡ï¼‰
     char* bits2string(Rank n) {
-        if (n > 8 * N) expand(n - 1); // ÌáÇ°À©Èİ
+        if (n > 8 * N) expand(n - 1); // æå‰æ‰©å®¹
         char* s = new char[n + 1];
         s[n] = '\0';
         for (Rank i = 0; i < n; i++) {
@@ -85,29 +85,29 @@ public:
     }
 };
 
-// ¹ş·òÂü±àÂëÀàĞÍ£¨»ùÓÚÎ»Í¼£©
+// å“ˆå¤«æ›¼ç¼–ç ç±»å‹ï¼ˆåŸºäºä½å›¾ï¼‰
 typedef Bitmap HuffCode;
 
-// ¹ş·òÂüÊ÷½Úµã½á¹¹Ìå
+// å“ˆå¤«æ›¼æ ‘èŠ‚ç‚¹ç»“æ„ä½“
 template <typename T>
 struct HuffNode {
-    T data;          // ´æ´¢×Ö·û£¨½öÒ¶×Ó½ÚµãÓĞĞ§£©
-    int weight;      // È¨ÖØ£¨×Ö·û³öÏÖ´ÎÊı£©
-    HuffNode* left;  // ×ó×Ó½Úµã£¨±àÂë 0£©
-    HuffNode* right; // ÓÒ×Ó½Úµã£¨±àÂë 1£©
+    T data;          // å­˜å‚¨å­—ç¬¦ï¼ˆä»…å¶å­èŠ‚ç‚¹æœ‰æ•ˆï¼‰
+    int weight;      // æƒé‡ï¼ˆå­—ç¬¦å‡ºç°æ¬¡æ•°ï¼‰
+    HuffNode* left;  // å·¦å­èŠ‚ç‚¹ï¼ˆç¼–ç  0ï¼‰
+    HuffNode* right; // å³å­èŠ‚ç‚¹ï¼ˆç¼–ç  1ï¼‰
 
-    // ¹¹Ôìº¯Êı
+    // æ„é€ å‡½æ•°
     HuffNode(T d = T(), int w = 0, HuffNode* l = nullptr, HuffNode* r = nullptr)
         : data(d), weight(w), left(l), right(r) {}
 };
 
-// ¹ş·òÂüÊ÷Àà
+// å“ˆå¤«æ›¼æ ‘ç±»
 template <typename T>
 class HuffTree {
 private:
-    HuffNode<T>* root;  // ¸ù½Úµã
+    HuffNode<T>* root;  // æ ¹èŠ‚ç‚¹
 
-    // µİ¹éÏú»Ù¹ş·òÂüÊ÷£¨ÊÍ·ÅÄÚ´æ£©
+    // é€’å½’é”€æ¯å“ˆå¤«æ›¼æ ‘ï¼ˆé‡Šæ”¾å†…å­˜ï¼‰
     void destroy(HuffNode<T>* node) {
         if (!node) return;
         destroy(node->left);
@@ -115,11 +115,11 @@ private:
         delete node;
     }
 
-    // µİ¹éÉú³É¹ş·òÂü±àÂë±í£¨Éî¶ÈÓÅÏÈ±éÀú£©
+    // é€’å½’ç”Ÿæˆå“ˆå¤«æ›¼ç¼–ç è¡¨ï¼ˆæ·±åº¦ä¼˜å…ˆéå†ï¼‰
     void generateCode(HuffNode<T>* node, HuffCode& code, map<T, string>& codeMap) {
         if (!node) return;
 
-        // Ò¶×Ó½Úµã£º¼ÇÂ¼µ±Ç°×Ö·ûµÄ±àÂë
+        // å¶å­èŠ‚ç‚¹ï¼šè®°å½•å½“å‰å­—ç¬¦çš„ç¼–ç 
         if (!node->left && !node->right) {
             char* bitStr = code.bits2string(code.size());
             codeMap[node->data] = string(bitStr);
@@ -127,42 +127,42 @@ private:
             return;
         }
 
-        // ×ó×ÓÊ÷£º±àÂë¼Ó '0'
+        // å·¦å­æ ‘ï¼šç¼–ç åŠ  '0'
         code.set(code.size());
         generateCode(node->left, code, codeMap);
         code.clear(code.size() - 1);
 
-        // ÓÒ×ÓÊ÷£º±àÂë¼Ó '1'
+        // å³å­æ ‘ï¼šç¼–ç åŠ  '1'
         code.set(code.size());
         generateCode(node->right, code, codeMap);
         code.clear(code.size() - 1);
     }
 
 public:
-    // ¹¹Ôìº¯Êı
+    // æ„é€ å‡½æ•°
     HuffTree() : root(nullptr) {}
 
-    // Îö¹¹º¯Êı
+    // ææ„å‡½æ•°
     ~HuffTree() {
         destroy(root);
         root = nullptr;
     }
 
-    // ¹¹½¨¹ş·òÂüÊ÷£¨ÊäÈë×Ö·û-ÆµÂÊÓ³Éä£©
+    // æ„å»ºå“ˆå¤«æ›¼æ ‘ï¼ˆè¾“å…¥å­—ç¬¦-é¢‘ç‡æ˜ å°„ï¼‰
     void build(map<T, int>& freqMap) {
         auto cmp = [](HuffNode<T>* a, HuffNode<T>* b) {
             return a->weight > b->weight;
         };
         priority_queue<HuffNode<T>*, vector<HuffNode<T>*>, decltype(cmp)> pq(cmp);
 
-        // ³õÊ¼»¯Ò¶×Ó½ÚµãÈë¶Ó
+        // åˆå§‹åŒ–å¶å­èŠ‚ç‚¹å…¥é˜Ÿ
         for (auto& pair : freqMap) {
             if (pair.second > 0) {
                 pq.push(new HuffNode<T>(pair.first, pair.second));
             }
         }
 
-        // ºÏ²¢½ÚµãÉú³ÉÊ÷
+        // åˆå¹¶èŠ‚ç‚¹ç”Ÿæˆæ ‘
         while (pq.size() > 1) {
             HuffNode<T>* left = pq.top(); pq.pop();
             HuffNode<T>* right = pq.top(); pq.pop();
@@ -176,7 +176,7 @@ public:
         }
     }
 
-    // Éú³É¹ş·òÂü±àÂë±í
+    // ç”Ÿæˆå“ˆå¤«æ›¼ç¼–ç è¡¨
     map<T, string> getCodeMap() {
         map<T, string> codeMap;
         if (!root) return codeMap;
@@ -186,7 +186,7 @@ public:
         return codeMap;
     }
 
-    // ¶Ô×Ö·û´®½øĞĞ±àÂë
+    // å¯¹å­—ç¬¦ä¸²è¿›è¡Œç¼–ç 
     string encode(string str, map<T, string>& codeMap) {
         string res;
         for (char c : str) {
@@ -201,7 +201,7 @@ public:
         return res;
     }
 
-    // ¼ÆËãÑ¹ËõÂÊ
+    // è®¡ç®—å‹ç¼©ç‡
     double calculateCompressionRate(string originalStr, string encodedStr) {
         int originalBits = 0;
         for (char c : originalStr) {
@@ -213,7 +213,7 @@ public:
     }
 };
 
-// Í³¼Æ×Ö·ûÆµÂÊ
+// ç»Ÿè®¡å­—ç¬¦é¢‘ç‡
 map<char, int> countCharFrequency(const char* filename) {
     map<char, int> freqMap;
     for (char c = 'a'; c <= 'z'; c++) {
@@ -222,7 +222,7 @@ map<char, int> countCharFrequency(const char* filename) {
 
     ifstream file(filename);
     if (!file.is_open()) {
-        cerr << "\n¾¯¸æ£ºÎ´ÕÒµ½ÎÄ±¾ÎÄ¼ş \"" << filename << "\"£¬Ê¹ÓÃÄ¬ÈÏÆµÂÊ±í£¡" << endl;
+        cerr << "\nè­¦å‘Šï¼šæœªæ‰¾åˆ°æ–‡æœ¬æ–‡ä»¶ \"" << filename << "\"ï¼Œä½¿ç”¨é»˜è®¤é¢‘ç‡è¡¨ï¼" << endl;
         freqMap = {
             {'a', 120}, {'b', 22}, {'c', 32}, {'d', 42}, {'e', 128},
             {'f', 22}, {'g', 20}, {'h', 40}, {'i', 76}, {'j', 4},
@@ -241,16 +241,16 @@ map<char, int> countCharFrequency(const char* filename) {
     }
     file.close();
 
-    cout << "\n=== ×Ö·ûÆµÂÊÍ³¼Æ½á¹û ===" << endl;
+    cout << "\n=== å­—ç¬¦é¢‘ç‡ç»Ÿè®¡ç»“æœ ===" << endl;
     for (auto& pair : freqMap) {
         if (pair.second > 0) {
-            cout << pair.first << ": " << pair.second << "´Î" << endl;
+            cout << pair.first << ": " << pair.second << "æ¬¡" << endl;
         }
     }
     return freqMap;
 }
 
-// ±¾µØ¶¨Òå±éÀúº¯Êı£¨±ÜÃâÒÀÀµ¿âÖĞµÄÖØ¸´¶¨Òå£©
+// æœ¬åœ°å®šä¹‰éå†å‡½æ•°ï¼ˆé¿å…ä¾èµ–åº“ä¸­çš„é‡å¤å®šä¹‰ï¼‰
 template <typename T>
 void printElem(T& e) {
     cout << e << " ";
@@ -264,42 +264,43 @@ struct Inc {
 };
 
 int main() {
-    cout << "===== ¹ş·òÂü±àÂëÊµÑé£¨exp2£©=====" << endl;
+    cout << "===== å“ˆå¤«æ›¼ç¼–ç å®éªŒï¼ˆexp2ï¼‰=====" << endl;
 
-    // 1. Í³¼Æ×Ö·ûÆµÂÊ
+    // 1. ç»Ÿè®¡å­—ç¬¦é¢‘ç‡
     map<char, int> freqMap = countCharFrequency("Ihaveadream.txt");
 
-    // 2. ¹¹½¨¹ş·òÂüÊ÷
+    // 2. æ„å»ºå“ˆå¤«æ›¼æ ‘
     HuffTree<char> huffTree;
     huffTree.build(freqMap);
 
-    // 3. Éú³É±àÂë±í
+    // 3. ç”Ÿæˆç¼–ç è¡¨
     map<char, string> codeMap = huffTree.getCodeMap();
-    cout << "\n=== ¹ş·òÂü±àÂë±í£¨×Ö·û -> ¶ş½øÖÆ±àÂë£©===" << endl;
+    cout << "\n=== å“ˆå¤«æ›¼ç¼–ç è¡¨ï¼ˆå­—ç¬¦ -> äºŒè¿›åˆ¶ç¼–ç ï¼‰===" << endl;
     for (auto& pair : codeMap) {
-        cout << pair.first << ": " << pair.second << "£¨³¤¶È£º" << pair.second.size() << "£©" << endl;
+        cout << pair.first << ": " << pair.second << "ï¼ˆé•¿åº¦ï¼š" << pair.second.size() << "ï¼‰" << endl;
     }
 
-    // 4. ²âÊÔµ¥´Ê±àÂë
-    cout << "\n=== µ¥´Ê±àÂë²âÊÔ ===" << endl;
+    // 4. æµ‹è¯•å•è¯ç¼–ç 
+    cout << "\n=== å•è¯ç¼–ç æµ‹è¯• ===" << endl;
     string testWords[] = {"dream", "freedom", "justice", "hope", "ihaveadream", "america"};
     for (string word : testWords) {
         string encoded = huffTree.encode(word, codeMap);
         double compressionRate = huffTree.calculateCompressionRate(word, encoded);
         cout << word << " -> " << encoded 
-             << "£¨³¤¶È£º" << encoded.size() << "£¬Ñ¹ËõÂÊ£º" << compressionRate << "%" << "£©" << endl;
+             << "ï¼ˆé•¿åº¦ï¼š" << encoded.size() << "ï¼Œå‹ç¼©ç‡ï¼š" << compressionRate << "%" << "ï¼‰" << endl;
     }
 
-    // 5. ×Ô¶¨ÒåÊäÈë±àÂë
-    cout << "\n=== ×Ô¶¨ÒåÊäÈë±àÂë ===" << endl;
+    // 5. è‡ªå®šä¹‰è¾“å…¥ç¼–ç 
+    cout << "\n=== è‡ªå®šä¹‰è¾“å…¥ç¼–ç  ===" << endl;
     string input;
-    cout << "ÇëÊäÈëÒª±àÂëµÄ×Ö·û´®£¨½ö´¦Àí×ÖÄ¸£©£º";
+    cout << "è¯·è¾“å…¥è¦ç¼–ç çš„å­—ç¬¦ä¸²ï¼ˆä»…å¤„ç†å­—æ¯ï¼‰ï¼š";
     cin >> input;
     string customEncoded = huffTree.encode(input, codeMap);
     double customRate = huffTree.calculateCompressionRate(input, customEncoded);
     cout << input << " -> " << customEncoded 
-         << "£¨³¤¶È£º" << customEncoded.size() << "£¬Ñ¹ËõÂÊ£º" << customRate << "%" << "£©" << endl;
+         << "ï¼ˆé•¿åº¦ï¼š" << customEncoded.size() << "ï¼Œå‹ç¼©ç‡ï¼š" << customRate << "%" << "ï¼‰" << endl;
 
-    cout << "\n===== ÊµÑé½áÊø =====" << endl;
+    cout << "\n===== å®éªŒç»“æŸ =====" << endl;
     return 0;
 }
+
