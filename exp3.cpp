@@ -1,13 +1,13 @@
-#include "Vector.h"
-#include "list.h"
-#include "Stack.h"
+#include "MySTL/Vector.h"
+#include "MySTL/list.h"
+#include "MySTL/Stack.h"
 #include <iostream>
 #include <climits>
 #include <cstring>
 #include <map>
 using namespace std;
 
-// È·±£Queue»ùÓÚListÊµÏÖ£¨ÈôList.hÖĞÎ´¶¨Òå£¬²¹³äÒÔÏÂ´úÂë£©
+// ç¡®ä¿QueueåŸºäºListå®ç°ï¼ˆè‹¥List.hä¸­æœªå®šä¹‰ï¼Œè¡¥å……ä»¥ä¸‹ä»£ç ï¼‰
 template <typename T>
 class Queue {
 private:
@@ -28,7 +28,7 @@ private:
 
     void dfsHelper(int u, Vector<bool>& visited) {
         cout << vertexs[u] << " ";
-        // ĞŞ¸´£º×Ô¶¨ÒåVectorµÄ[]·µ»ØÖµĞèÆ¥ÅäÀàĞÍ
+        // ä¿®å¤ï¼šè‡ªå®šä¹‰Vectorçš„[]è¿”å›å€¼éœ€åŒ¹é…ç±»å‹
         visited.replace(u, true);
         for (int v = 0; v < vertexNum; v++) {
             if (adj[u][v] != INT_MAX && !visited[v]) {
@@ -57,14 +57,14 @@ private:
     }
 
 public:
-    // ĞŞ¸´£ºVector³õÊ¼»¯¸ÄÎªÖğ¸öÌí¼Ó
+    // ä¿®å¤ï¼šVectoråˆå§‹åŒ–æ”¹ä¸ºé€ä¸ªæ·»åŠ 
     Graph(Vector<string>& vtxList) {
         vertexNum = vtxList.size();
         for (int i = 0; i < vertexNum; i++) {
             vtxMap[vtxList[i]] = i;
             vertexs.push_back(vtxList[i]);
         }
-        // ³õÊ¼»¯ÁÚ½Ó¾ØÕó
+        // åˆå§‹åŒ–é‚»æ¥çŸ©é˜µ
         for (int i = 0; i < vertexNum; i++) {
             Vector<int> row;
             for (int j = 0; j < vertexNum; j++) {
@@ -83,7 +83,7 @@ public:
     }
 
     void printAdjMatrix() {
-        cout << "\n=== Í¼µÄÁÚ½Ó¾ØÕó ===" << endl;
+        cout << "\n=== å›¾çš„é‚»æ¥çŸ©é˜µ ===" << endl;
         cout << "   ";
         for (int i = 0; i < vertexNum; i++) {
             cout << vertexs[i] << "  ";
@@ -92,7 +92,7 @@ public:
         for (int i = 0; i < vertexNum; i++) {
             cout << vertexs[i] << "  ";
             for (int j = 0; j < vertexNum; j++) {
-                if (adj[i][j] == INT_MAX) cout << "¡Ş  ";
+                if (adj[i][j] == INT_MAX) cout << "âˆ  ";
                 else cout << adj[i][j] << "  ";
             }
             cout << endl;
@@ -101,11 +101,11 @@ public:
 
     void BFS(string startName) {
         int start = vtxMap[startName];
-        // ĞŞ¸´£ºVector<bool>³õÊ¼»¯¸ÄÎªÖğ¸ö¸³Öµ
+        // ä¿®å¤ï¼šVector<bool>åˆå§‹åŒ–æ”¹ä¸ºé€ä¸ªèµ‹å€¼
         Vector<bool> visited;
         for (int i = 0; i < vertexNum; i++) visited.push_back(false);
         Queue<int> q;
-        cout << "\n=== BFS ±éÀú£¨Æğµã£º" << startName << "£©===" << endl;
+        cout << "\n=== BFS éå†ï¼ˆèµ·ç‚¹ï¼š" << startName << "ï¼‰===" << endl;
         q.enqueue(start);
         visited.replace(start, true);
         while (!q.empty()) {
@@ -126,7 +126,7 @@ public:
         int start = vtxMap[startName];
         Vector<bool> visited;
         for (int i = 0; i < vertexNum; i++) visited.push_back(false);
-        cout << "\n=== DFS ±éÀú£¨Æğµã£º" << startName << "£©===" << endl;
+        cout << "\n=== DFS éå†ï¼ˆèµ·ç‚¹ï¼š" << startName << "ï¼‰===" << endl;
         dfsHelper(start, visited);
         cout << endl;
     }
@@ -160,10 +160,10 @@ public:
             }
         }
 
-        cout << "\n=== Dijkstra µ¥Ô´×î¶ÌÂ·¾¶£¨Æğµã£º" << startName << "£©===" << endl;
+        cout << "\n=== Dijkstra å•æºæœ€çŸ­è·¯å¾„ï¼ˆèµ·ç‚¹ï¼š" << startName << "ï¼‰===" << endl;
         for (int i = 0; i < vertexNum; i++) {
-            cout << startName << " -> " << vertexs[i] << "£º";
-            if (dist[i] == INT_MAX) cout << "²»¿É´ï";
+            cout << startName << " -> " << vertexs[i] << "ï¼š";
+            if (dist[i] == INT_MAX) cout << "ä¸å¯è¾¾";
             else cout << dist[i];
             cout << endl;
         }
@@ -201,14 +201,14 @@ public:
             }
         }
 
-        cout << "\n=== Prim ×îĞ¡Éú³ÉÊ÷£¨Æğµã£º" << startName << "£©===" << endl;
-        cout << "±ß£¨Æğµã-ÖÕµã£©£ºÈ¨ÖØ" << endl;
+        cout << "\n=== Prim æœ€å°ç”Ÿæˆæ ‘ï¼ˆèµ·ç‚¹ï¼š" << startName << "ï¼‰===" << endl;
+        cout << "è¾¹ï¼ˆèµ·ç‚¹-ç»ˆç‚¹ï¼‰ï¼šæƒé‡" << endl;
         for (int i = 0; i < vertexNum; i++) {
             if (parent[i] != -1) {
-                cout << vertexs[parent[i]] << " - " << vertexs[i] << "£º" << adj[parent[i]][i] << endl;
+                cout << vertexs[parent[i]] << " - " << vertexs[i] << "ï¼š" << adj[parent[i]][i] << endl;
             }
         }
-        cout << "×îĞ¡Éú³ÉÊ÷×ÜÈ¨ÖØ£º" << totalWeight << endl;
+        cout << "æœ€å°ç”Ÿæˆæ ‘æ€»æƒé‡ï¼š" << totalWeight << endl;
     }
 
     void findCutVertices() {
@@ -222,14 +222,14 @@ public:
         }
         int time = 0;
 
-        cout << "\n=== Tarjan Ëã·¨ÕÒ¹Ø½Úµã ===" << endl;
+        cout << "\n=== Tarjan ç®—æ³•æ‰¾å…³èŠ‚ç‚¹ ===" << endl;
         for (int i = 0; i < vertexNum; i++) {
             if (dfn[i] == 0) {
                 tarjan(i, -1, dfn, low, isCut, time);
             }
         }
 
-        cout << "Í¼ÖĞµÄ¹Ø½Úµã£º";
+        cout << "å›¾ä¸­çš„å…³èŠ‚ç‚¹ï¼š";
         bool hasCut = false;
         for (int i = 0; i < vertexNum; i++) {
             if (isCut[i]) {
@@ -237,13 +237,13 @@ public:
                 hasCut = true;
             }
         }
-        if (!hasCut) cout << "ÎŞ";
+        if (!hasCut) cout << "æ— ";
         cout << endl;
     }
 };
 
 int main() {
-    cout << "===== Í¼Ëã·¨ÊµÑé£¨exp3£©=====" << endl;
+    cout << "===== å›¾ç®—æ³•å®éªŒï¼ˆexp3ï¼‰=====" << endl;
     Vector<string> vertexList;
     vertexList.push_back("A");
     vertexList.push_back("B");
@@ -275,6 +275,7 @@ int main() {
     graph.prim("A");
     graph.findCutVertices();
 
-    cout << "\n===== ÊµÑé½áÊø =====" << endl;
+    cout << "\n===== å®éªŒç»“æŸ =====" << endl;
     return 0;
 }
+
