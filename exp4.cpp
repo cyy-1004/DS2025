@@ -1,16 +1,16 @@
-#include "Vector.h"
-#include "List.h"
-#include "Stack.h"
+#include "MySTL/Vector.h"
+#include "MySTL/list.h"
+#include "MySTL/Stack.h"
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
 #include <iomanip>
 using namespace std;
 
-// Éú³ÉËæ»úÊı×é£¨·¶Î§£º[minVal, maxVal]£¬³¤¶È£ºn£©
+// ç”Ÿæˆéšæœºæ•°ç»„ï¼ˆèŒƒå›´ï¼š[minVal, maxVal]ï¼Œé•¿åº¦ï¼šnï¼‰
 Vector<int> generateRandomArray(int n, int minVal = 0, int maxVal = 10000) {
     Vector<int> arr;
-    srand((unsigned int)time(nullptr)); // Ëæ»úÖÖ×Ó
+    srand((unsigned int)time(nullptr)); // éšæœºç§å­
     for (int i = 0; i < n; i++) {
         int val = minVal + rand() % (maxVal - minVal + 1);
         arr.push_back(val);
@@ -18,7 +18,7 @@ Vector<int> generateRandomArray(int n, int minVal = 0, int maxVal = 10000) {
     return arr;
 }
 
-// ¸´ÖÆÊı×é£¨±ÜÃâÔ­Êı×é±»ĞŞ¸Ä£©
+// å¤åˆ¶æ•°ç»„ï¼ˆé¿å…åŸæ•°ç»„è¢«ä¿®æ”¹ï¼‰
 template <typename T>
 Vector<T> copyArray(const Vector<T>& arr) {
     Vector<T> res;
@@ -28,10 +28,10 @@ Vector<T> copyArray(const Vector<T>& arr) {
     return res;
 }
 
-// ´òÓ¡Êı×éÇ° 10 ¸öÔªËØ£¨±ÜÃâ´óÊı¾İÁ¿Êä³öÈßÓà£©
+// æ‰“å°æ•°ç»„å‰ 10 ä¸ªå…ƒç´ ï¼ˆé¿å…å¤§æ•°æ®é‡è¾“å‡ºå†—ä½™ï¼‰
 template <typename T>
 void printArray(const Vector<T>& arr) {
-    cout << "Êı×éÇ° 10 ¸öÔªËØ£º";
+    cout << "æ•°ç»„å‰ 10 ä¸ªå…ƒç´ ï¼š";
     int len = min(arr.size(), 10);
     for (int i = 0; i < len; i++) {
         cout << arr[i] << " ";
@@ -39,12 +39,12 @@ void printArray(const Vector<T>& arr) {
     cout << (arr.size() > 10 ? "..." : "") << endl;
 }
 
-// 1. Ã°ÅİÅÅĞò£¨ÎÈ¶¨£¬O(n2)£©
+// 1. å†’æ³¡æ’åºï¼ˆç¨³å®šï¼ŒO(n2)ï¼‰
 template <typename T>
 void bubbleSort(Vector<T>& arr) {
     int n = arr.size();
     for (int i = 0; i < n - 1; i++) {
-        bool swapped = false; // ÓÅ»¯£ºÎŞ½»»»ÔòÌáÇ°ÍË³ö
+        bool swapped = false; // ä¼˜åŒ–ï¼šæ— äº¤æ¢åˆ™æå‰é€€å‡º
         for (int j = 0; j < n - 1 - i; j++) {
             if (arr[j] > arr[j + 1]) {
                 swap(arr[j], arr[j + 1]);
@@ -55,13 +55,13 @@ void bubbleSort(Vector<T>& arr) {
     }
 }
 
-// 2. Ñ¡ÔñÅÅĞò£¨²»ÎÈ¶¨£¬O(n2)£©
+// 2. é€‰æ‹©æ’åºï¼ˆä¸ç¨³å®šï¼ŒO(n2)ï¼‰
 template <typename T>
 void selectSort(Vector<T>& arr) {
     int n = arr.size();
     for (int i = 0; i < n - 1; i++) {
         int minIdx = i;
-        // ÕÒ [i, n) ÖĞµÄ×îĞ¡ÖµË÷Òı
+        // æ‰¾ [i, n) ä¸­çš„æœ€å°å€¼ç´¢å¼•
         for (int j = i + 1; j < n; j++) {
             if (arr[j] < arr[minIdx]) {
                 minIdx = j;
@@ -71,14 +71,14 @@ void selectSort(Vector<T>& arr) {
     }
 }
 
-// 3. ²åÈëÅÅĞò£¨ÎÈ¶¨£¬O(n2)£©
+// 3. æ’å…¥æ’åºï¼ˆç¨³å®šï¼ŒO(n2)ï¼‰
 template <typename T>
 void insertSort(Vector<T>& arr) {
     int n = arr.size();
     for (int i = 1; i < n; i++) {
         T temp = arr[i];
         int j = i - 1;
-        // ÒÆ¶¯±È temp ´óµÄÔªËØ
+        // ç§»åŠ¨æ¯” temp å¤§çš„å…ƒç´ 
         while (j >= 0 && arr[j] > temp) {
             arr.replace(j + 1, arr[j]);
             j--;
@@ -87,18 +87,18 @@ void insertSort(Vector<T>& arr) {
     }
 }
 
-// 4. ¿ìËÙÅÅĞò£¨²»ÎÈ¶¨£¬O(n log n)£©
+// 4. å¿«é€Ÿæ’åºï¼ˆä¸ç¨³å®šï¼ŒO(n log n)ï¼‰
 template <typename T>
 int partition(Vector<T>& arr, int low, int high) {
-    T pivot = arr[high]; // »ù×¼ÔªËØ£¨Ñ¡Ä©Î²£©
-    int i = low - 1;     // Ğ¡ÓÚ»ù×¼µÄÇøÓò±ß½ç
+    T pivot = arr[high]; // åŸºå‡†å…ƒç´ ï¼ˆé€‰æœ«å°¾ï¼‰
+    int i = low - 1;     // å°äºåŸºå‡†çš„åŒºåŸŸè¾¹ç•Œ
     for (int j = low; j < high; j++) {
         if (arr[j] <= pivot) {
             i++;
             swap(arr[i], arr[j]);
         }
     }
-    swap(arr[i + 1], arr[high]); // »ù×¼ÔªËØ¹éÎ»
+    swap(arr[i + 1], arr[high]); // åŸºå‡†å…ƒç´ å½’ä½
     return i + 1;
 }
 
@@ -106,8 +106,8 @@ template <typename T>
 void quickSortHelper(Vector<T>& arr, int low, int high) {
     if (low < high) {
         int pivotIdx = partition(arr, low, high);
-        quickSortHelper(arr, low, pivotIdx - 1);  // ×óÇø¼äÅÅĞò
-        quickSortHelper(arr, pivotIdx + 1, high); // ÓÒÇø¼äÅÅĞò
+        quickSortHelper(arr, low, pivotIdx - 1);  // å·¦åŒºé—´æ’åº
+        quickSortHelper(arr, pivotIdx + 1, high); // å³åŒºé—´æ’åº
     }
 }
 
@@ -116,12 +116,12 @@ void quickSort(Vector<T>& arr) {
     quickSortHelper(arr, 0, arr.size() - 1);
 }
 
-// 5. ¹é²¢ÅÅĞò£¨ÎÈ¶¨£¬O(n log n)£©
+// 5. å½’å¹¶æ’åºï¼ˆç¨³å®šï¼ŒO(n log n)ï¼‰
 template <typename T>
 void merge(Vector<T>& arr, int low, int mid, int high) {
     Vector<T> temp;
     int i = low, j = mid + 1;
-    // ºÏ²¢Á½¸öÓĞĞòÇø¼ä
+    // åˆå¹¶ä¸¤ä¸ªæœ‰åºåŒºé—´
     while (i <= mid && j <= high) {
         if (arr[i] <= arr[j]) {
             temp.push_back(arr[i++]);
@@ -129,10 +129,10 @@ void merge(Vector<T>& arr, int low, int mid, int high) {
             temp.push_back(arr[j++]);
         }
     }
-    // ¸´ÖÆÊ£ÓàÔªËØ
+    // å¤åˆ¶å‰©ä½™å…ƒç´ 
     while (i <= mid) temp.push_back(arr[i++]);
     while (j <= high) temp.push_back(arr[j++]);
-    // ¸´ÖÆ»ØÔ­Êı×é
+    // å¤åˆ¶å›åŸæ•°ç»„
     for (int k = 0; k < temp.size(); k++) {
         arr.replace(low + k, temp[k]);
     }
@@ -142,9 +142,9 @@ template <typename T>
 void mergeSortHelper(Vector<T>& arr, int low, int high) {
     if (low < high) {
         int mid = (low + high) / 2;
-        mergeSortHelper(arr, low, mid);    // ×óÇø¼äÅÅĞò
-        mergeSortHelper(arr, mid + 1, high); // ÓÒÇø¼äÅÅĞò
-        merge(arr, low, mid, high);        // ºÏ²¢
+        mergeSortHelper(arr, low, mid);    // å·¦åŒºé—´æ’åº
+        mergeSortHelper(arr, mid + 1, high); // å³åŒºé—´æ’åº
+        merge(arr, low, mid, high);        // åˆå¹¶
     }
 }
 
@@ -153,14 +153,14 @@ void mergeSort(Vector<T>& arr) {
     mergeSortHelper(arr, 0, arr.size() - 1);
 }
 
-// 6. ¶ÑÅÅĞò£¨²»ÎÈ¶¨£¬O(n log n)£©
+// 6. å †æ’åºï¼ˆä¸ç¨³å®šï¼ŒO(n log n)ï¼‰
 template <typename T>
 void heapify(Vector<T>& arr, int n, int i) {
-    int largest = i;       // ¸ù½Úµã
-    int left = 2 * i + 1;  // ×ó×Ó½Úµã
-    int right = 2 * i + 2; // ÓÒ×Ó½Úµã
+    int largest = i;       // æ ¹èŠ‚ç‚¹
+    int left = 2 * i + 1;  // å·¦å­èŠ‚ç‚¹
+    int right = 2 * i + 2; // å³å­èŠ‚ç‚¹
 
-    // ÕÒ³ö¸ù¡¢×ó¡¢ÓÒÖĞµÄ×î´óÖµ
+    // æ‰¾å‡ºæ ¹ã€å·¦ã€å³ä¸­çš„æœ€å¤§å€¼
     if (left < n && arr[left] > arr[largest]) {
         largest = left;
     }
@@ -168,7 +168,7 @@ void heapify(Vector<T>& arr, int n, int i) {
         largest = right;
     }
 
-    // ×î´óÖµ²»ÊÇ¸ù½ÚµãÔò½»»»£¬²¢µİ¹éµ÷Õû
+    // æœ€å¤§å€¼ä¸æ˜¯æ ¹èŠ‚ç‚¹åˆ™äº¤æ¢ï¼Œå¹¶é€’å½’è°ƒæ•´
     if (largest != i) {
         swap(arr[i], arr[largest]);
         heapify(arr, n, largest);
@@ -178,57 +178,57 @@ void heapify(Vector<T>& arr, int n, int i) {
 template <typename T>
 void heapSort(Vector<T>& arr) {
     int n = arr.size();
-    // ¹¹½¨´ó¶¥¶Ñ£¨´Ó×îºóÒ»¸ö·ÇÒ¶×Ó½Úµã¿ªÊ¼£©
+    // æ„å»ºå¤§é¡¶å †ï¼ˆä»æœ€åä¸€ä¸ªéå¶å­èŠ‚ç‚¹å¼€å§‹ï¼‰
     for (int i = n / 2 - 1; i >= 0; i--) {
         heapify(arr, n, i);
     }
-    // ¶ÑÅÅĞò£ºÖğ¸öÌáÈ¡¶Ñ¶¥ÔªËØ
+    // å †æ’åºï¼šé€ä¸ªæå–å †é¡¶å…ƒç´ 
     for (int i = n - 1; i > 0; i--) {
-        swap(arr[0], arr[i]); // ¶Ñ¶¥£¨×î´óÖµ£©ÒÆµ½Ä©Î²
-        heapify(arr, i, 0);   // µ÷ÕûÊ£ÓàÔªËØÎª´ó¶¥¶Ñ
+        swap(arr[0], arr[i]); // å †é¡¶ï¼ˆæœ€å¤§å€¼ï¼‰ç§»åˆ°æœ«å°¾
+        heapify(arr, i, 0);   // è°ƒæ•´å‰©ä½™å…ƒç´ ä¸ºå¤§é¡¶å †
     }
 }
 
-// ²éÕÒËã·¨ 1£ºË³Ğò²éÕÒ£¨O(n)£©
+// æŸ¥æ‰¾ç®—æ³• 1ï¼šé¡ºåºæŸ¥æ‰¾ï¼ˆO(n)ï¼‰
 template <typename T>
 int sequentialSearch(const Vector<T>& arr, const T& target) {
     for (int i = 0; i < arr.size(); i++) {
         if (arr[i] == target) {
-            return i; // ÕÒµ½·µ»ØË÷Òı
+            return i; // æ‰¾åˆ°è¿”å›ç´¢å¼•
         }
     }
-    return -1; // Î´ÕÒµ½·µ»Ø -1
+    return -1; // æœªæ‰¾åˆ°è¿”å› -1
 }
 
-// ²éÕÒËã·¨ 2£º¶ş·Ö²éÕÒ£¨O(log n)£¬ÒªÇóÊı×éÓĞĞò£©
+// æŸ¥æ‰¾ç®—æ³• 2ï¼šäºŒåˆ†æŸ¥æ‰¾ï¼ˆO(log n)ï¼Œè¦æ±‚æ•°ç»„æœ‰åºï¼‰
 template <typename T>
 int binarySearch(const Vector<T>& arr, const T& target) {
     int low = 0, high = arr.size() - 1;
     while (low <= high) {
         int mid = (low + high) / 2;
         if (arr[mid] == target) {
-            return mid; // ÕÒµ½·µ»ØË÷Òı
+            return mid; // æ‰¾åˆ°è¿”å›ç´¢å¼•
         } else if (arr[mid] < target) {
             low = mid + 1;
         } else {
             high = mid - 1;
         }
     }
-    return -1; // Î´ÕÒµ½·µ»Ø -1
+    return -1; // æœªæ‰¾åˆ°è¿”å› -1
 }
 
-// ²âÊÔÅÅĞòËã·¨ĞÔÄÜ£¨·µ»ØºÄÊ±£¬µ¥Î»£ººÁÃë£©
+// æµ‹è¯•æ’åºç®—æ³•æ€§èƒ½ï¼ˆè¿”å›è€—æ—¶ï¼Œå•ä½ï¼šæ¯«ç§’ï¼‰
 template <typename T>
 double testSortTime(void (*sortFunc)(Vector<T>&), Vector<T> arr, string sortName) {
     clock_t start = clock();
-    sortFunc(arr); // Ö´ĞĞÅÅĞò
+    sortFunc(arr); // æ‰§è¡Œæ’åº
     clock_t end = clock();
     double time = 1000.0 * (end - start) / CLOCKS_PER_SEC;
-    cout << left << setw(12) << sortName << "ºÄÊ±£º" << fixed << setprecision(3) << time << " ms" << endl;
+    cout << left << setw(12) << sortName << "è€—æ—¶ï¼š" << fixed << setprecision(3) << time << " ms" << endl;
     return time;
 }
 
-// ÑéÖ¤Êı×éÊÇ·ñÓĞĞò
+// éªŒè¯æ•°ç»„æ˜¯å¦æœ‰åº
 template <typename T>
 bool isSorted(const Vector<T>& arr) {
     for (int i = 0; i < arr.size() - 1; i++) {
@@ -240,60 +240,61 @@ bool isSorted(const Vector<T>& arr) {
 }
 
 int main() {
-    cout << "===== ÅÅĞòÓë²éÕÒËã·¨×ÛºÏÊµÑé£¨exp4£©=====" << endl;
+    cout << "===== æ’åºä¸æŸ¥æ‰¾ç®—æ³•ç»¼åˆå®éªŒï¼ˆexp4ï¼‰=====" << endl;
 
-    // 1. ÊµÑéÅäÖÃ
-    int n = 5000; // Êı×é³¤¶È£¨¿ÉĞŞ¸Ä£ºÈç 10000¡¢50000£©
-    cout << "ÊµÑéÅäÖÃ£ºÊı×é³¤¶È = " << n << "£¬ÔªËØ·¶Î§ = [0, 10000]" << endl;
+    // 1. å®éªŒé…ç½®
+    int n = 5000; // æ•°ç»„é•¿åº¦ï¼ˆå¯ä¿®æ”¹ï¼šå¦‚ 10000ã€50000ï¼‰
+    cout << "å®éªŒé…ç½®ï¼šæ•°ç»„é•¿åº¦ = " << n << "ï¼Œå…ƒç´ èŒƒå›´ = [0, 10000]" << endl;
 
-    // 2. Éú³ÉËæ»úÊı×é
+    // 2. ç”Ÿæˆéšæœºæ•°ç»„
     Vector<int> arr = generateRandomArray(n);
-    cout << "\nÔ­Ê¼Êı×é£º";
+    cout << "\nåŸå§‹æ•°ç»„ï¼š";
     printArray(arr);
 
-    // 3. ²âÊÔ 6 ÖÖÅÅĞòËã·¨
-    cout << "\n=== ÅÅĞòËã·¨ĞÔÄÜ¶Ô±È ===" << endl;
-    testSortTime(bubbleSort<int>, copyArray(arr), "Ã°ÅİÅÅĞò");
-    testSortTime(selectSort<int>, copyArray(arr), "Ñ¡ÔñÅÅĞò");
-    testSortTime(insertSort<int>, copyArray(arr), "²åÈëÅÅĞò");
-    testSortTime(quickSort<int>, copyArray(arr), "¿ìËÙÅÅĞò");
-    testSortTime(mergeSort<int>, copyArray(arr), "¹é²¢ÅÅĞò");
-    testSortTime(heapSort<int>, copyArray(arr), "¶ÑÅÅĞò");
+    // 3. æµ‹è¯• 6 ç§æ’åºç®—æ³•
+    cout << "\n=== æ’åºç®—æ³•æ€§èƒ½å¯¹æ¯” ===" << endl;
+    testSortTime(bubbleSort<int>, copyArray(arr), "å†’æ³¡æ’åº");
+    testSortTime(selectSort<int>, copyArray(arr), "é€‰æ‹©æ’åº");
+    testSortTime(insertSort<int>, copyArray(arr), "æ’å…¥æ’åº");
+    testSortTime(quickSort<int>, copyArray(arr), "å¿«é€Ÿæ’åº");
+    testSortTime(mergeSort<int>, copyArray(arr), "å½’å¹¶æ’åº");
+    testSortTime(heapSort<int>, copyArray(arr), "å †æ’åº");
 
-    // 4. ÑéÖ¤ÅÅĞò½á¹û£¨ÒÔ¿ìËÙÅÅĞòÎªÀı£©
+    // 4. éªŒè¯æ’åºç»“æœï¼ˆä»¥å¿«é€Ÿæ’åºä¸ºä¾‹ï¼‰
     Vector<int> sortedArr = copyArray(arr);
     quickSort(sortedArr);
-    cout << "\nÅÅĞò½á¹ûÑéÖ¤£º" << (isSorted(sortedArr) ? "? Êı×éÓĞĞò" : "? Êı×éÎŞĞò") << endl;
-    cout << "ÅÅĞòºóÊı×é£º";
+    cout << "\næ’åºç»“æœéªŒè¯ï¼š" << (isSorted(sortedArr) ? "? æ•°ç»„æœ‰åº" : "? æ•°ç»„æ— åº") << endl;
+    cout << "æ’åºåæ•°ç»„ï¼š";
     printArray(sortedArr);
 
-    // 5. ²éÕÒËã·¨²âÊÔ
-    cout << "\n=== ²éÕÒËã·¨²âÊÔ ===" << endl;
-    int target = sortedArr[n / 2]; // ²éÕÒÖĞ¼äÔªËØ£¨È·±£´æÔÚ£©
-    cout << "²éÕÒÄ¿±ê£º" << target << endl;
+    // 5. æŸ¥æ‰¾ç®—æ³•æµ‹è¯•
+    cout << "\n=== æŸ¥æ‰¾ç®—æ³•æµ‹è¯• ===" << endl;
+    int target = sortedArr[n / 2]; // æŸ¥æ‰¾ä¸­é—´å…ƒç´ ï¼ˆç¡®ä¿å­˜åœ¨ï¼‰
+    cout << "æŸ¥æ‰¾ç›®æ ‡ï¼š" << target << endl;
 
-    // Ë³Ğò²éÕÒ
+    // é¡ºåºæŸ¥æ‰¾
     clock_t seqStart = clock();
     int seqIdx = sequentialSearch(sortedArr, target);
     clock_t seqEnd = clock();
     double seqTime = 1000.0 * (seqEnd - seqStart) / CLOCKS_PER_SEC;
-    cout << "Ë³Ğò²éÕÒ£ºË÷Òı = " << seqIdx << "£¬ºÄÊ± = " << fixed << setprecision(6) << seqTime << " ms" << endl;
+    cout << "é¡ºåºæŸ¥æ‰¾ï¼šç´¢å¼• = " << seqIdx << "ï¼Œè€—æ—¶ = " << fixed << setprecision(6) << seqTime << " ms" << endl;
 
-    // ¶ş·Ö²éÕÒ£¨ÓĞĞòÊı×é£©
+    // äºŒåˆ†æŸ¥æ‰¾ï¼ˆæœ‰åºæ•°ç»„ï¼‰
     clock_t binStart = clock();
     int binIdx = binarySearch(sortedArr, target);
     clock_t binEnd = clock();
     double binTime = 1000.0 * (binEnd - binStart) / CLOCKS_PER_SEC;
-    cout << "¶ş·Ö²éÕÒ£ºË÷Òı = " << binIdx << "£¬ºÄÊ± = " << fixed << setprecision(6) << binTime << " ms" << endl;
+    cout << "äºŒåˆ†æŸ¥æ‰¾ï¼šç´¢å¼• = " << binIdx << "ï¼Œè€—æ—¶ = " << fixed << setprecision(6) << binTime << " ms" << endl;
 
-    // ²éÕÒ²»´æÔÚµÄÔªËØ
+    // æŸ¥æ‰¾ä¸å­˜åœ¨çš„å…ƒç´ 
     int invalidTarget = 10001;
     int invalidSeqIdx = sequentialSearch(sortedArr, invalidTarget);
     int invalidBinIdx = binarySearch(sortedArr, invalidTarget);
-    cout << "\n²éÕÒ²»´æÔÚµÄÄ¿±ê£¨" << invalidTarget << "£©£º" << endl;
-    cout << "Ë³Ğò²éÕÒ½á¹û£º" << (invalidSeqIdx == -1 ? "Î´ÕÒµ½" : to_string(invalidSeqIdx)) << endl;
-    cout << "¶ş·Ö²éÕÒ½á¹û£º" << (invalidBinIdx == -1 ? "Î´ÕÒµ½" : to_string(invalidBinIdx)) << endl;
+    cout << "\næŸ¥æ‰¾ä¸å­˜åœ¨çš„ç›®æ ‡ï¼ˆ" << invalidTarget << "ï¼‰ï¼š" << endl;
+    cout << "é¡ºåºæŸ¥æ‰¾ç»“æœï¼š" << (invalidSeqIdx == -1 ? "æœªæ‰¾åˆ°" : to_string(invalidSeqIdx)) << endl;
+    cout << "äºŒåˆ†æŸ¥æ‰¾ç»“æœï¼š" << (invalidBinIdx == -1 ? "æœªæ‰¾åˆ°" : to_string(invalidBinIdx)) << endl;
 
-    cout << "\n===== ÊµÑé½áÊø =====" << endl;
+    cout << "\n===== å®éªŒç»“æŸ =====" << endl;
     return 0;
 }
+
