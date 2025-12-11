@@ -1,7 +1,7 @@
 #include <iostream>
 #include <random>
-#include "Vector.h"
-#include "Stack.h"
+#include "MySTL/Vector.h"
+#include "MySTL/Stack.h"
 
 using namespace std;
 
@@ -69,3 +69,4 @@ int main() {
     
     return 0;
 }
+
